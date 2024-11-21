@@ -6,4 +6,4 @@ These days I mostly use emulators to play Spectrum games, and I have both books'
 
 Perhaps once I'm done, I might try improving it by adding pictures from the book to the game itself.
 
-No actual code here yet... the original source code in lovely ZX BASIC is [[ios.bas]] and my code documentation so far is [[notes.md]].
+No actual code here yet... the original source code in lovely ZX BASIC is [ios.bas] and my code documentation so far is [notes.md].
