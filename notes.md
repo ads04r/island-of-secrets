@@ -1,0 +1,1 @@
+/home/ash/Documents/Obsidan/Ash Notes/Brain Dumps/Island of Secrets.md
