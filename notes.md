@@ -31,7 +31,7 @@ Begins by setting the game speed (I think) and calling the initialisation subrou
  150 PRINT : PRINT "WHAT WILL YOU DO"; 
  160 INPUT e$: PRINT "  ";  e$
  ```
-The next bit handles the user input. `e$` contains the full text typed, and this gets split into `c$` and `x$` for first word, rest of sentence respectively. `li` is set to the length of `e$`. We then go through `v$`, set on line `4340`, in order to change the verb into its verb index (see list of verbs below.) We then `GO SUB 760` which does exactly the same, but for the second word (why it needs a subroutine, I don't know.) So, by the end of this code block, `a` is the id of the verb, `o` is the id of the noun, the timer `l` gets decreased by 1, and `b$` gets set to a string of numbers indicating some kind of overall state.
+The next bit handles the user input. `e$` contains the full text typed, and this gets split into `c$` and `x$` for first word, rest of sentence respectively. `li` is set to the length of `e$`. We then go through `v$`, set on line `4340`, in order to change the verb into its verb index (see list of verbs below.) We then `GO SUB 760` which does exactly the same, but for the second word (why it needs a subroutine, I don't know.) So, by the end of this code block, `a` is the id of the verb, `o` is the id of the noun, the timer `l` gets decreased by 1, and `b$` gets set to a string of numbers indicating the overall state. This comprises of the numerical ID of the object last specified, the location of that object, the state (array `f`) of that object and the numerical ID of the current location.
 ```basic 
  170 LET c$="": LET x$="": LET a=0: LET o=52: LET li=LEN (e$)
  180 FOR i=1 TO li-1
@@ -733,32 +733,32 @@ Interestingly, line `640` is just a `RETURN` statement.
 
 Scalars
 
-| Variable | Initial value | Purpose                      |
-| -------- | ------------- | ---------------------------- |
-| r        | 26            | location id                  |
-| lr       | 2860          | some sort of program counter |
-| wv       | 70            | game speed?                  |
-| l        | 1000          | time remaining               |
-| y        | 100           | strength                     |
-| x        | 35            | wisdom                       |
-| c1       | 16            |                              |
-| c2       | 21            |                              |
-| c3       | 24            |                              |
-| c4       | 43            |                              |
-| g        | 2             |                              |
-| f        | 2             |                              |
-| w        | 51            |                              |
-| v        | 42            | the number of verbs we know  |
+| Variable | Initial value | Purpose                             |
+| -------- | ------------- | ----------------------------------- |
+| r        | 26            | location id                         |
+| lr       | 2860          | some sort of program counter        |
+| wv       | 70            | game speed?                         |
+| l        | 1000          | time remaining                      |
+| y        | 100           | strength                            |
+| x        | 35            | wisdom                              |
+| c1       | 16            |                                     |
+| c2       | 21            |                                     |
+| c3       | 24            |                                     |
+| c4       | 43            |                                     |
+| g        | 2             |                                     |
+| f        | 2             |                                     |
+| w        | 51            | the number of nouns we know (guess) |
+| v        | 42            | the number of verbs we know         |
 
 Arrays
 
-| Variable | Size | Contains                                      |
-| -------- | ---- | --------------------------------------------- |
-| l        | 52   | one per noun, stores the object's location id |
-| f        | 52   | one per noun ...flag?                         |
-| g        | 43   | the data from lines `4470` to `4510`          |
-| i$       | 7, 7 | prepositions                                  |
-| h        | 7    | lengths of the seven prepositions             |
+| Variable | Size | Contains                                        |
+| -------- | ---- | ----------------------------------------------- |
+| l        | 52   | one per noun, stores the object's location id   |
+| f        | 52   | one per noun ...flag?                           |
+| g        | 43   | the subroutine data from lines `4470` to `4510` |
+| i$       | 7, 7 | prepositions                                    |
+| h        | 7    | lengths of the seven prepositions               |
 
 -----
 
@@ -813,58 +813,61 @@ Arrays
 
 ### Nouns
 
-1. APPLE
-2. EGG
-3. FLOWER
-4. JUG
-5. RAG
-6. PARCHMENT
-7. TORCH
-8. PEBBLE
-9. AXE
-10. ROPE
-11. STAFF
-12. CHIP
-13. COAL
-14. FLINT
-15. HAMMER
-16. CANYON BEAST
-17. LOAF
-18. MELON
-19. BISCUITS
-20. MUSHROOMS
-21. BOTTLE
-22. WINE
-23. SAP
-24. WATER
-25. BOAT
-26. CHEST
-27. COLUMN
-28. STONE
-29. TRAPDOOR
-30. VILLAGER
-31. LIQUOR
-32. SWAMPMAN
-33. SAGE
-34. BOOKS
-35. ROOTS
-36. ASA (Fierce living storm that follows you)
-37. WRAITHS
-38. CLOAK
-39. OMEGAN
-40. SNAKE
-41. LOGMEN
-42. SCAVENGER
-43. MEDIAN
-44. NORTH
-45. SOUTH
-46. EAST
-47. WEST
-48. UP
-49. DOWN
-50. IN
-51. OUT
-52. ???
+| ID  | name                                       | init `l` | init `f` | constant |
+| --- | ------------------------------------------ | -------- | -------- | -------- |
+| 1   | APPLE                                      | 45       | 9        |          |
+| 2   | EGG                                        | 46       | 0        |          |
+| 3   | FLOWER                                     | 71       | 1        |          |
+| 4   | JUG                                        | 41       | 0        |          |
+| 5   | RAG                                        | 44       | 1        |          |
+| 6   | PARCHMENT                                  | 21       | 1        |          |
+| 7   | TORCH                                      | 27       | 9        |          |
+| 8   | PEBBLE                                     | 15       | 1        |          |
+| 9   | AXE                                        | 53       | 0        |          |
+| 10  | ROPE                                       | 62       | 0        |          |
+| 11  | STAFF                                      | 75       | 1        |          |
+| 12  | CHIP                                       | 58       | 1        |          |
+| 13  | COAL                                       | 80       | 0        |          |
+| 14  | FLINT                                      | 67       | 9        |          |
+| 15  | HAMMER                                     | 44       | 1        |          |
+| 16  | CANYON BEAST                               | 5        | 0        | c1       |
+| 17  | LOAF                                       | 44       | 9        |          |
+| 18  | MELON                                      | 42       | 0        |          |
+| 19  | BISCUITS                                   | 60       | 0        |          |
+| 20  | MUSHROOMS                                  | 21       | 0        |          |
+| 21  | BOTTLE                                     | 44       | 9        | c2       |
+| 22  | WINE                                       | 42       | 0        |          |
+| 23  | SAP                                        | 77       | 1        |          |
+| 24  | WATER                                      | 13       | 0        | c3       |
+| 25  | BOAT                                       | 33       | 0        |          |
+| 26  | CHEST                                      | 44       | 0        |          |
+| 27  | COLUMN                                     | 58       | 1        |          |
+| 28  | STONE                                      | 15       | 1        |          |
+| 29  | TRAPDOOR                                   | 51       | 1        |          |
+| 30  | VILLAGER                                   | 75       | 0        |          |
+| 31  | LIQUOR                                     | 41       | 0        |          |
+| 32  | SWAMPMAN                                   | 78       | 0        |          |
+| 33  | SAGE                                       | 71       | 0        |          |
+| 34  | BOOKS                                      | 50       | 0        |          |
+| 35  | ROOTS                                      | 77       | 0        |          |
+| 36  | ASA (Fierce living storm that follows you) | 23       | 1        |          |
+| 37  | WRAITHS                                    | 19       | 0        |          |
+| 38  | CLOAK                                      | 10       | 0        |          |
+| 39  | OMEGAN                                     | 10       | 0        |          |
+| 40  | SNAKE                                      | 45       | 0        |          |
+| 41  | LOGMEN                                     | 42       | 0        |          |
+| 42  | SCAVENGER                                  | 38       | 0        |          |
+| 43  | MEDIAN                                     | 38       | 1        | c4       |
+| 44  | NORTH                                      | 0        | 0        |          |
+| 45  | SOUTH                                      | 0        | 0        |          |
+| 46  | EAST                                       | 0        | 0        |          |
+| 47  | WEST                                       | 0        | 0        |          |
+| 48  | UP                                         | 0        | 0        |          |
+| 49  | DOWN                                       | 0        | 0        |          |
+| 50  | IN                                         | 0        | 0        |          |
+| 51  | OUT                                        | 0        | 0        |          |
+
+
 
 ### Prepositions
 I think these are mostly used for location descriptions.
