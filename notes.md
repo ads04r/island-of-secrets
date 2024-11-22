@@ -55,7 +55,7 @@ The next line calls a subroutine based on the first word (verb) typed.
 ```basic 
  340 GO SUB g(a)
 ```
-
+The next code block is a load of special case conditions.
 ```basic  
  350 IF r=61 THEN LET x=x-FN r(2)+1
  360 IF r=14 AND FN r(3)=1 THEN LET y=y-1: LET f$="YOU ARE BITTEN"
@@ -78,7 +78,29 @@ The next line calls a subroutine based on the first word (verb) typed.
  530 IF f(8)+f(11)+f(13)=-3 THEN LET f(w)=1: GO SUB 2800
  540 IF f(w)=0 AND l>0 AND y>1 AND x>1 THEN GO TO 30
 ```
+
+350. If the player is in "A livid growth of mad orchids", then reduce the wisdom by 2 or 3
+360. If the player is in "A thicket of biting bushes", then 33% chance of reducing strength by 1
+370. If the storm's variable is <1 and the location ID isn't the negative of the wine's variable, then increase the storm's variable by 1, move the storm to the current location and reduce strength by 1
+380. If the player isn't with the canyon beast and the canyon beast's location isn't 0 then move the canyon beast to either the "Depths of the Mutant Forest", "A Path Out of the Overgrown Depths", "A Carnivorous Tree" or "A Corral Beneath the Crimson Canyon" (equal chance of each)
+390. If the player isn't with Omegan, move him somewhere randomly
+400. If the player *is* with Omegan, but not with Median, and the coal's variable is higher than -1, then reduce strength and wisdom by 2 each
+410. If the player isn't in the Swampman's lair, move the Swampman to either the swamp or the stump village
+420. If the player is on the log pier, on the Island of Secrets or the river's edge by the bridge, 50% chance the Boatman will appear
+430. If the player is with the Swampman, and his variable is 0, 50% chance of calling the Swampman subroutine at line `1310`
+440. If the player is on the edge of the well with strength lower than 70 and Median's variable is 0, 25% chance of being pushed into the well (ending the game)
+450. If the player isn't with the logmen, move them randomly
+460. If the player *is* with the logmen, reduce their variable by 1, and if it's lower than -4, call the Logmen subroutine at line `1230`
+470. If Median's variable is 0, move him to where the player is
+480. If Median is in a certain location and you're not, then it calls the extra hint subroutine at `1330`
+490. If you're in the clone storage area, reduce strength by one
+500. If your strength is under 50 then pick one of the first nine objects and call the drop routine. If it's successful, change the message to "You dropped something" to alert the player.
+510. If time is under 900 and you're on the leafy path (start area), and the storm's variable is over 0, then there's a 1/3 chance the Storm subroutine will be called.
+520. If you're by the two clashing stones and the pebble's variable is over 0 then add "you can go no further" to the status message
+530. If the sum of the pebble, staff and coal's variables is -3 then call the "You won!" subroutine
+540. If the game isn't over, and your location is valid, and your strength and wisdom are over 1, then repeat the main loop.
 #### Game Over
+If line `540` doesn't return to the beginning of the main loop, then the game is over.
 ```basic 
  550 IF l<1 OR y<1 THEN LET f$="YOU HAVE FAILED, THE EVIL ONE SUCCEEDS"
  560 PRINT : PRINT f$: PRINT "YOUR FINAL SCORE=";  INT (x+y+(ABS (l/7*(l<640))))
@@ -192,7 +214,7 @@ This is called from the main loop. Every time you're in the same location as the
 ```
 
 ### Swampman subroutine
-This is called randomly from the main loop if you are in the same location as the Swampman.
+This is called randomly from the main loop (line `430`) if you are in the same location as the Swampman.
 ```basic
 1310 LET a$="*THE SWAMPMAN TELLS HIS TALE"
 1320 GO SUB 2740: LET f(32)=-1: RETURN 
@@ -733,22 +755,21 @@ Interestingly, line `640` is just a `RETURN` statement.
 
 Scalars
 
-| Variable | Initial value | Purpose                             |
-| -------- | ------------- | ----------------------------------- |
-| r        | 26            | location id                         |
-| lr       | 2860          | some sort of program counter        |
-| wv       | 70            | game speed?                         |
-| l        | 1000          | time remaining                      |
-| y        | 100           | strength                            |
-| x        | 35            | wisdom                              |
-| c1       | 16            |                                     |
-| c2       | 21            |                                     |
-| c3       | 24            |                                     |
-| c4       | 43            |                                     |
-| g        | 2             |                                     |
-| f        | 2             |                                     |
-| w        | 51            | the number of nouns we know (guess) |
-| v        | 42            | the number of verbs we know         |
+| Variable | Initial value | Purpose        |
+| -------- | ------------- | -------------- |
+| r        | 26            | location id    |
+| l        | 1000          | time remaining |
+| y        | 100           | strength       |
+| x        | 35            | wisdom         |
+
+Strings
+
+
+| Variable | Initial value                      | Purpose                                                                         |
+| -------- | ---------------------------------- | ------------------------------------------------------------------------------- |
+| f$       | LET YOUR QUEST BEGIN               | The information text to print at the top of the page when asking for user input |
+| h$       | Item locations, then `STONY WORDS` |                                                                                 |
+
 
 Arrays
 
@@ -759,6 +780,43 @@ Arrays
 | g        | 43   | the subroutine data from lines `4470` to `4510` |
 | i$       | 7, 7 | prepositions                                    |
 | h        | 7    | lengths of the seven prepositions               |
+
+Constants
+
+| Name | Value | Description                               |
+| ---- | ----- | ----------------------------------------- |
+| c1   | 16    |                                           |
+| c2   | 21    |                                           |
+| c3   | 24    |                                           |
+| c4   | 43    |                                           |
+| lr   | 2860  | a base line number for READing DATA lines |
+| wv   | 70    | game speed (I think)                      |
+| w    | 51    | the number of nouns we know               |
+| v    | 42    | the number of verbs we know               |
+| g    | 2     |                                           |
+| f    | 2     |                                           |
+
+Constant strings
+
+| Name | Value                                                   |
+| ---- | ------------------------------------------------------- |
+| g$   | `--------------------------------`                      |
+| j$   | `THE STONES ARE FIXED`                                  |
+| k$   | `REFLECTIONS STIR WITHIN`                               |
+| l$   | `REMEMBER ALADDIN IT WORKED FOR HIM`                    |
+| m$   | `DECIDE TO HAVE A LITTLE FUN AND `                      |
+| n$   | `THE TORCH BRIGHTENS`                                   |
+| o$   | `WHICH TAKES OMEGAN IN ITS CLAWS AND FLIES AWAY`        |
+| p$   | `REMEMBER OLD TIMES`                                    |
+| q$   | `90101191001109109000901000111000000100000010000000000` |
+| r$   | ` WHICH FLIES YOU TO A REMOTE PLACE`                    |
+| s$   | `FALLING UNDER THE SPELL OF THE BOATMAN `               |
+| t$   | `AND ARE TAKEN TO THE ISLAND OF SECRETS`                |
+| u$   | `YOU ANGER THE BIRD`                                    |
+| v$   | `N??S??E??W??GO?GETTAKGIV` ... (verbs)                  |
+| w$   | `YOU CAN'T `                                            |
+| z$   | `APPEGGFLOJUGRAGPARTORPEB` ... (nouns)                  |
+
 
 -----
 
@@ -839,7 +897,7 @@ Arrays
 | 22  | WINE                                       | 42       | 0        |          |
 | 23  | SAP                                        | 77       | 1        |          |
 | 24  | WATER                                      | 13       | 0        | c3       |
-| 25  | BOAT                                       | 33       | 0        |          |
+| 25  | BOATMAN                                    | 33       | 0        |          |
 | 26  | CHEST                                      | 44       | 0        |          |
 | 27  | COLUMN                                     | 58       | 1        |          |
 | 28  | STONE                                      | 15       | 1        |          |
