@@ -1021,6 +1021,43 @@ I think these are mostly used for location descriptions.
 79. A TUNNEL INTO ONE OF THE TREE STUMPS
 80. A HOLLOW CHAMBER MANY METRES IN DIAMETER
 
+## b$ states
+
+b$ holds a 'coded' string indicating a particular state which is used to determine lots of conditions at once. Here is a list of what all of the possible states are
+
+| b$      | State                                                                            |
+| ------- | -------------------------------------------------------------------------------- |
+| 10045   | Using the apple by the shack                                                     |
+| 40041   | Interacting with the jug while in the hut                                        |
+| 246046  | Using water at the Dactyl's nest                                                 |
+| 480056  | Going 'up' while at the steps to the pyramid                                     |
+| 490051  | Going 'down' while in the Logmen's store room                                    |
+| 490066  | Going 'down' while on the roof of the pyramid                                    |
+| 500012  | Going 'in' while in a dark cave,                                                 |
+| 500037  | Going 'in' while by the portal in the wall                                       |
+| 500045  | Going 'in' while in the clearing by the shack                                    |
+| 500053  | Going 'in' while In the log building                                             |
+| 500070  | Going 'in' while outside the adobe hut                                           |
+| 510011  | Going 'out' while in Snelm's Lair                                                |
+| 510041  | Going 'out' while in the log hut                                                 |
+| 510043  | Going 'out' while in the porch of the cabin                                      |
+| 510044  | Going 'out' while in Grandpa's shack                                             |
+| 510052  | Going 'out' while in the Logmen's hall                                           |
+| 510060  | Going 'out' while in the adobe hut                                               |
+| 1258158 | Interacting with the chip in its initial state by the column                     |
+| 2413075 | Interacting with the water in its initial state in the village                   |
+| 2644044 | Interacting with the chest in its initial state while in the shack               |
+| 2758158 | Interacting with the column in its initial state while standing next to it       |
+| 2951151 | Interacting with the trapdoor in its initial state while in the storeroom        |
+| 3075075 | Interacting with the villager in their initial state while in the village        |
+| 3371071 | Interacting with the Sage in her initial state while at the heart of the lillies |
+| 3450050 | Interacting with the books in their initial state while in the library           |
+| 3577077 | Interacting with the roots in their initial state while in the swamp             |
+| 3810010 | Interacting with the cloak in its initial state while in Omegan's sanctum        |
+
+
+
+
 -----
 
 ## Solution 
