@@ -757,7 +757,7 @@ Scalars
 
 | Variable | Initial value | Purpose        |
 | -------- | ------------- | -------------- |
-| r        | 26            | location id    |
+| r        | 23            | location id    |
 | l        | 1000          | time remaining |
 | y        | 100           | strength       |
 | x        | 35            | wisdom         |
@@ -939,87 +939,89 @@ I think these are mostly used for location descriptions.
 7. ON
 
 ## Location list
+|     | Location                                           | N   | S   | W   | E   |
+| --- | -------------------------------------------------- | --- | --- | --- | --- |
+| 1   | THE FURTHEST DEPTHS OF THE FOREST                  | X   |     | X   |     |
+| 2   | THE DEPTHS OF THE MUTANT FOREST                    | X   |     |     |     |
+| 3   | A PATH OUT OF THE OVERGROWN DEPTHS                 | X   |     |     |     |
+| 4   | A CARNIVOROUS TREE                                 | X   |     |     |     |
+| 5   | A CORRAL BENEATH THE CRIMSON CANYON                | X   | X   |     | X   |
+| 6   | THE TOP OF A STEEP CLIFF                           | X   |     | X   | X   |
+| 7   | THE MARSH FACTORY                                  | X   |     | X   |     |
+| 8   | THE SLUDGE FERMENTATION VATS                       | X   | X   |     | X   |
+| 9   | THE UPPERMOST BATTLEMENTS                          | X   |     | X   |     |
+| 10  | OMEGAN'S SANCTUM                                   | X   | X   |     | X   |
+| 11  | SNELM'S LAIR                                       |     |     | X   |     |
+| 12  | A DARK CAVE                                        |     |     |     |     |
+| 13  | BROKEN BRANCHES                                    |     | X   |     |     |
+| 14  | A THICKET OF BITING BUSHES                         |     |     |     |     |
+| 15  | A HUGE GLASS STONE                                 | X   | X   |     | X   |
+| 16  | THE EDGE OF CRIMSON CANYON                         |     |     | X   | X   |
+| 17  | THE CLONE FACTORY                                  |     | X   | X   |     |
+| 18  | A CORRIDOR OF CLONE STORAGE CASKS                  | X   | X   |     |     |
+| 19  | EDGE OF THE WELL                                   |     |     |     |     |
+| 20  | THE ROOM OF SECRET VISIONS                         | X   | X   |     | X   |
+| 21  | SNELM'S INNER CHAMBER                              |     | X   | X   | X   |
+| 22  | THE SOUTHERN EDGE OF THE FOREST                    |     | X   | X   |     |
+| 23  | A LEAFY PATH                                       | X   |     |     |     |
+| 24  | A FORK IN THE PATH                                 |     | X   |     |     |
+| 25  | AN APPARENTLY UNCLIMBABLE ROCKY PATH               | X   | X   |     |     |
+| 26  | A LEDGE ATOP THE CRIMSON CANYON                    |     |     |     | X   |
+| 27  | A TALL ENTRANCE CHAMBER                            | X   | X   | X   |     |
+| 28  | A LOW PASSAGE WITH ARMS REACHING FROM THE WALLS    | X   |     |     | X   |
+| 29  | THE APPROACH TO THE WELL OF DESPAIR                |     |     | X   |     |
+| 30  | A DIM CORRIDOR DEEP IN THE CASTLE                  | X   |     |     | X   |
+| 31  | THE STAGNANT WATERS OF THE CRAWLING CREEK          | X   |     | X   |     |
+| 32  | A SHALLOW POOL OFF THE CREEK                       | X   | X   |     |     |
+| 33  | A LOG PIER, JUTTING OUT OVER THE CREEK             |     |     |     |     |
+| 34  | A STRETCH OF FEATURELESS DUNES                     | X   | X   |     |     |
+| 35  | A GROUP OF TALL TREES                              | X   |     |     | X   |
+| 36  | A NARROW LEDGE AT THE SUMMIT OF THE CANYON         |     |     | X   | X   |
+| 37  | A MONSTEROUS PORTAL IN THE CASTLE WALL             |     |     | X   | X   |
+| 38  | A CHAMBER INCHES DEEP WITH DUST                    |     |     | X   |     |
+| 39  | HERE                                               | X   | X   | X   | X   |
+| 40  | A CARVED ARCHWAY                                   |     |     |     | X   |
+| 41  | A SMALL HUT IN THE LOG SETTLEMENT                  |     | X   | X   | X   |
+| 42  | A HUGE SPLIT-LOG TABLE                             | X   |     | X   |     |
+| 43  | THE PORCH OF THE LOGMEN'S CABIN                    |     | X   |     | X   |
+| 44  | GRANDPA'S SHACK                                    | X   | X   | X   |     |
+| 45  | A CLEARING IN THE TREES BY A RICKETY SHACK         |     |     |     | X   |
+| 46  | THE NEST OF A HUGE DACTYL                          |     | X   | X   | X   |
+| 47  | THE CASTLE OF DARK SECRETS BY TWO HUGE STONES      |     |     | X   | X   |
+| 48  | A ROOM LITTERED WITH BONES                         |     | X   | X   | X   |
+| 49  | THE CELL OF WHISPERED SECRETS                      |     | X   | X   | X   |
+| 50  | THE LIBRARY OF WRITTEN SECRETS                     |     | X   | X   | X   |
+| 51  | A REFUSE STREWN STOREROOM                          | X   | X   | X   | X   |
+| 52  | THE LOGMEN'S HALL                                  |     |     |     |     |
+| 53  | A LOG BUILDING                                     | X   |     |     |     |
+| 54  | A RUTTED HILLSIDE                                  | X   | X   |     |     |
+| 55  | A WINDSWEPT PLAIN AMONGST STONE MEGALITHS          |     | X   |     |     |
+| 56  | THE STEPS OF AN ANCIENT PYRAMID                    | X   |     |     | X   |
+| 57  | THE ISLAND OF SECRETS                              |     | X   | X   | X   |
+| 58  | A BROKEN MARBLE COLUMN                             | X   |     | X   |     |
+| 59  | AN EXPANSE OF CRACKED, BAKED EARTH                 | X   | X   |     |     |
+| 60  | A DESERTED ADOBE HUT                               | X   |     |     | X   |
+| 61  | A LIVID GROWTH OF MAD ORCHIDS                      | X   |     | X   | X   |
+| 62  | A CORNER STREWN WITH BROKEN CHAIRS                 |     | X   | X   | X   |
+| 63  | THE BRIDGE NEAR TO A LOG SETTLEMENT                |     |     | X   | X   |
+| 64  | A CRUMBLING MASS OF PETRIFIED TREES                | X   |     | X   | X   |
+| 65  | THE EDGE OF THE PYRAMID                            | X   | X   | X   |     |
+| 66  | THE ROOF OF THE ANCIENT PYRAMID                    |     | X   |     |     |
+| 67  | AN IMPASSABLE SPLIT IN THE PYRAMID                 | X   | X   |     | X   |
+| 68  | A BARREN BLASTED WASTELAND                         |     |     | X   |     |
+| 69  | AN EXPANSE OF BLEAK, BURNT LAND                    | X   | X   |     |     |
+| 70  | A DELAPIDATED ADOBE HUT                            |     | X   |     | X   |
+| 71  | THE HEART OF THE LILIES                            |     | X   | X   |     |
+| 72  | THE MIDST OF THE LILIES                            | X   | X   |     |     |
+| 73  | A RIVER'S EDGE BY A LOG BRIDGE                     |     | X   |     |     |
+| 74  | A PETRIFIED VILLAGE BY A RIVER CROWDED WITH LILIES |     | X   |     |     |
+| 75  | THE REMAINS OF A VILLAGE                           | X   | X   |     |     |
+| 76  | THE ENTRANCE TO A PETRIFIED VILLAGE                | X   | X   |     |     |
+| 77  | A SWAMP MATTED WITH FIBROUS ROOTS                  | X   | X   |     |     |
+| 78  | A VILLAGE OF HOLLOW STUMPS DEFYING THE SWAMP       |     | X   |     |     |
+| 79  | A TUNNEL INTO ONE OF THE TREE STUMPS               | X   | X   |     |     |
+| 80  | A HOLLOW CHAMBER MANY METRES IN DIAMETER           | X   | X   |     | X   |
 
-1. THE FURTHEST DEPTHS OF THE FOREST
-2. THE DEPTHS OF THE MUTANT FOREST
-3. A PATH OUT OF THE OVERGROWN DEPTHS
-4. A CARNIVOROUS TREE
-5. A CORRAL BENEATH THE CRIMSON CANYON
-6. THE TOP OF A STEEP CLIFF
-7. THE MARSH FACTORY
-8. THE SLUDGE FERMENTATION VATS
-9. THE UPPERMOST BATTLEMENTS
-10. OMEGAN'S SANCTUM
-11. SNELM'S LAIR
-12. A DARK CAVE
-13. BROKEN BRANCHES
-14. A THICKET OF BITING BUSHES
-15. A HUGE GLASS STONE
-16. THE EDGE OF CRIMSON CANYON
-17. THE CLONE FACTORY
-18. A CORRIDOR OF CLONE STORAGE CASKS
-19. EDGE OF THE WELL
-20. THE ROOM OF SECRET VISIONS
-21. SNELM'S INNER CHAMBER
-22. THE SOUTHERN EDGE OF THE FOREST
-23. A LEAFY PATH
-24. A FORK IN THE PATH
-25. AN APPARENTLY UNCLIMBABLE ROCKY PATH
-26. A LEDGE ATOP THE CRIMSON CANYON
-27. A TALL ENTRANCE CHAMBER
-28. A LOW PASSAGE WITH ARMS REACHING FROM THE WALLS
-29. THE APPROACH TO THE WELL OF DESPAIR
-30. A DIM CORRIDOR DEEP IN THE CASTLE
-31. THE STAGNANT WATERS OF THE CRAWLING CREEK
-32. A SHALLOW POOL OFF THE CREEK
-33. A LOG PIER, JUTTING OUT OVER THE CREEK
-34. A STRETCH OF FEATURELESS DUNES
-35. A GROUP OF TALL TREES
-36. A NARROW LEDGE AT THE SUMMIT OF THE CANYON
-37. A MONSTEROUS PORTAL IN THE CASTLE WALL
-38. A CHAMBER INCHES DEEP WITH DUST
-39. HERE
-40. A CARVED ARCHWAY
-41. A SMALL HUT IN THE LOG SETTLEMENT
-42. A HUGE SPLIT-LOG TABLE
-43. THE PORCH OF THE LOGMEN'S CABIN
-44. GRANDPA'S SHACK
-45. A CLEARING IN THE TREES BY A RICKETY SHACK
-46. THE NEST OF A HUGE DACTYL
-47. THE CASTLE OF DARK SECRETS BY TWO HUGE STONES
-48. A ROOM LITTERED WITH BONES
-49. THE CELL OF WHISPERED SECRETS
-50. THE LIBRARY OF WRITTEN SECRETS
-51. A REFUSE STREWN STOREROOM
-52. THE LOGMEN'S HALL
-53. A LOG BUILDING
-54. A RUTTED HILLSIDE
-55. A WINDSWEPT PLAIN AMONGST STONE MEGALITHS
-56. THE STEPS OF AN ANCIENT PYRAMID
-57. THE ISLAND OF SECRETS
-58. A BROKEN MARBLE COLUMN
-59. AN EXPANSE OF CRACKED, BAKED EARTH
-60. A DESERTED ADOBE HUT
-61. A LIVID GROWTH OF MAD ORCHIDS
-62. A CORNER STREWN WITH BROKEN CHAIRS
-63. THE BRIDGE NEAR TO A LOG SETTLEMENT
-64. A CRUMBLING MASS OF PETRIFIED TREES
-65. THE EDGE OF THE PYRAMID
-66. THE ROOF OF THE ANCIENT PYRAMID
-67. AN IMPASSABLE SPLIT IN THE PYRAMID
-68. A BARREN BLASTED WASTELAND
-69. AN EXPANSE OF BLEAK, BURNT LAND
-70. A DELAPIDATED ADOBE HUT
-71. THE HEART OF THE LILIES
-72. THE MIDST OF THE LILIES
-73. A RIVER'S EDGE BY A LOG BRIDGE
-74. A PETRIFIED VILLAGE BY A RIVER CROWDED WITH LILIES
-75. THE REMAINS OF A VILLAGE
-76. THE ENTRANCE TO A PETRIFIED VILLAGE
-77. A SWAMP MATTED WITH FIBROUS ROOTS
-78. A VILLAGE OF HOLLOW STUMPS DEFYING THE SWAMP
-79. A TUNNEL INTO ONE OF THE TREE STUMPS
-80. A HOLLOW CHAMBER MANY METRES IN DIAMETER
 
 ## b$ states
 
