@@ -6,4 +6,4 @@ These days I mostly use emulators to play Spectrum games, and I have both books'
 
 Perhaps once I'm done, I might try improving it by adding pictures from the book to the game itself.
 
-No actual code here yet... the original source code in lovely ZX BASIC is [ios.bas](https://raw.githubusercontent.com/ads04r/island-of-secrets/refs/heads/master/ios.bas) and my code documentation so far is [notes.md](https://github.com/ads04r/island-of-secrets/blob/master/notes.md).
+No working code here yet... the original source code in lovely ZX BASIC is [ios.bas](https://raw.githubusercontent.com/ads04r/island-of-secrets/refs/heads/master/ios.bas) and my code documentation so far is [notes.md](https://github.com/ads04r/island-of-secrets/blob/master/notes.md).
