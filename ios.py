@@ -23,6 +23,8 @@ class Game():
 		self.time_remaining = 1000
 		self.strength = 100
 		self.wisdom = 35
+		self.food = 2
+		self.drink = 2
 
 		self.CONST_C1 = 16
 		self.CONST_C2 = 21
@@ -101,10 +103,16 @@ class Game():
 		else:
 			word_id = self.__word_id(n[0][0])
 			self.state = str(word_id) + str(n[0][2]) + str(n[0][3]) + str(self.location)
+
+		print('\033[96m' + self.state + '\033[0m')
+
 		self.time_remaining = self.time_remaining - 1
+		self.status = ''
 
 		if (((len(v) == 0) | ('GO' in v)) & (len(n) > 0)):
 			self.__cmd_move(n, self.state)
+		if ((('GET' in v) | ('TAK' in v) | ('PIC' in v) | ('CAT' in v)) & (len(n) > 0)):
+			self.__cmd_get(v, n, self.state)
 
 		if self.strength <= 0:
 			self.over = True
@@ -237,6 +245,105 @@ class Game():
 			text = "#THE BOAT SKIMS THE DARK SILENT WATERS"
 			self.location = 57
 		self.__slow_print(text)
+
+	def __cmd_get(self, verbs, nouns, state):
+
+		v = 42
+		w = 51
+		o = self.__word_id(nouns[0][0])
+
+#1080 IF ((f(o)>0 AND f(o)<9) OR l(o)<>r) AND o<=c3 THEN LET f$="WHAT "+x$+"?": RETURN 
+
+		if ((((self.items[o - 1][3] > 0) & (self.items[o - 1][3] < 9)) | (self.items[o - 1][2] != self.location)) & (o <= self.CONST_C3)):
+			self.status = "WHAT ITEM DO YOU MEAN?"
+			return
+
+#1090 IF b$="3450050"THEN LET y=y-8: LET x=x-5: LET f$="THEY ARE CURSED": RETURN 
+
+		if state == '3450050':
+			self.strength = self.strength - 8
+			self.wisdom = self.wisdom - 5
+			self.status = "THEY ARE CURSED."
+			return
+
+#1100 IF b$="3810010"THEN GO SUB 1370
+
+		if state == '3810010':
+			self.__slow_print("////LIGHTNING FLASHES!")
+			self.items[38][2] = self.location
+			self.strength = self.strength - 8
+			self.wisdom = self.wisdom - 2
+
+#1110 IF (a=15 AND o<>20 AND o<>1) OR (a=29 AND o<>16) OR o>c3 THEN LET f$=w$+c$+" "+x$: RETURN 
+
+		if ((('PIC' in verbs) & (o != 20) & (o != 1)) | (('CAT' in verbs) & (o != 16)) | (o > self.CONST_C3)):
+			self.status = "YOU CAN'T DO THAT."
+			return
+
+#1120 IF l(o)=r AND (f(o)<1 OR f(o)=9) AND o<c3 THEN LET l(o)=0: LET a=-1
+
+		if ((self.items[o - 1][2] == self.location) & ((self.items[o - 1][3] < 1) | (self.items[o - 1][3] == 9)) & (o < self.CONST_C3)):
+			verbs = []
+			self.items[o - 1][2] = 0
+
+#1130 IF o=16 AND l(10)<>0 THEN LET l(o)=r: LET f$="IT ESCAPED": LET a=0
+
+		if ((o == 16) & (self.items[9][2] != 0)):
+			self.items[o - 1] = self.location
+			self.status = "IT ESCAPED."
+			verbs = ['']
+
+#1140 IF o>c1 AND o<c2 THEN LET f=f+2: LET a=-1
+
+		if ((o > self.CONST_C1) & (o < self.CONST_C2)):
+			self.food = self.food + 2
+			verbs = []
+
+#1150 IF o>=c2 AND o<=c3 THEN LET g=g+2: LET a=-1
+
+		if ((o >= self.CONST_C2) & (o <= self.CONST_C3)):
+			self.drink = self.drink + 2
+			verbs = []
+
+#1160 IF o>c1 AND o<c3 THEN LET l(o)=-81
+
+		if ((o > self.CONST_C1) & (o < self.CONST_C3)):
+			self.items[o - 1][2] = -81
+
+#1170 IF a=-1 THEN LET f$="TAKEN": LET x=x+4: LET e=e+1: IF f(o)>1 THEN LET f(o)=0
+
+		if len(verbs) == 0:
+			self.status = "TAKEN."
+			self.wisdom = self.wisdom + 4
+			if self.items[o - 1][3] > 1:
+				self.items[o - 1][3] = 0
+
+#1180 IF b$<>"246046"OR l(11)=0 THEN RETURN 
+
+		if ((self.state != '246046') | (self.items[10][2] == 0)):
+			return
+
+#1190 LET f$=u$: LET l(o)=r: IF FN r(3)<3 THEN RETURN 
+
+		self.status = "YOU ANGER THE BIRD"
+		self.items[o - 1][2] = self.location
+		if random.randint(1, 3) < 3:
+			return
+
+#1200 LET a$="#"+u$+r$
+
+		self.__slow_print("#YOU ANGER THE BIRD, AND IT FLIES YOU TO A REMOTE PLACE")
+
+#1210 LET r=63+FN r(6): LET l(16)=1: LET f$=""
+
+		self.location = 63 + random.randint(1, 6)
+		self.items[15][2] = 1
+		self.status = ''
+
+#1220 GO SUB 2740: RETURN 
+
+		return
+
 
 if __name__ == "__main__":
 
