@@ -113,6 +113,10 @@ class Game():
 			self.__cmd_move(n, self.state)
 		if ((('GET' in v) | ('TAK' in v) | ('PIC' in v) | ('CAT' in v)) & (len(n) > 0)):
 			self.__cmd_get(v, n, self.state)
+		if 'GIV' in v:
+			self.__cmd_give(n, self.state)
+		if 'OPE' in v:
+			self.__cmd_open(self.state)
 
 		if self.strength <= 0:
 			self.over = True
@@ -246,19 +250,17 @@ class Game():
 			self.location = 57
 		self.__slow_print(text)
 
+		return
+
 	def __cmd_get(self, verbs, nouns, state):
 
 		v = 42
 		w = 51
 		o = self.__word_id(nouns[0][0])
 
-#1080 IF ((f(o)>0 AND f(o)<9) OR l(o)<>r) AND o<=c3 THEN LET f$="WHAT "+x$+"?": RETURN 
-
 		if ((((self.items[o - 1][3] > 0) & (self.items[o - 1][3] < 9)) | (self.items[o - 1][2] != self.location)) & (o <= self.CONST_C3)):
 			self.status = "WHAT ITEM DO YOU MEAN?"
 			return
-
-#1090 IF b$="3450050"THEN LET y=y-8: LET x=x-5: LET f$="THEY ARE CURSED": RETURN 
 
 		if state == '3450050':
 			self.strength = self.strength - 8
@@ -266,51 +268,35 @@ class Game():
 			self.status = "THEY ARE CURSED."
 			return
 
-#1100 IF b$="3810010"THEN GO SUB 1370
-
 		if state == '3810010':
 			self.__slow_print("////LIGHTNING FLASHES!")
 			self.items[38][2] = self.location
 			self.strength = self.strength - 8
 			self.wisdom = self.wisdom - 2
 
-#1110 IF (a=15 AND o<>20 AND o<>1) OR (a=29 AND o<>16) OR o>c3 THEN LET f$=w$+c$+" "+x$: RETURN 
-
 		if ((('PIC' in verbs) & (o != 20) & (o != 1)) | (('CAT' in verbs) & (o != 16)) | (o > self.CONST_C3)):
 			self.status = "YOU CAN'T DO THAT."
 			return
 
-#1120 IF l(o)=r AND (f(o)<1 OR f(o)=9) AND o<c3 THEN LET l(o)=0: LET a=-1
-
 		if ((self.items[o - 1][2] == self.location) & ((self.items[o - 1][3] < 1) | (self.items[o - 1][3] == 9)) & (o < self.CONST_C3)):
 			verbs = []
 			self.items[o - 1][2] = 0
-
-#1130 IF o=16 AND l(10)<>0 THEN LET l(o)=r: LET f$="IT ESCAPED": LET a=0
 
 		if ((o == 16) & (self.items[9][2] != 0)):
 			self.items[o - 1] = self.location
 			self.status = "IT ESCAPED."
 			verbs = ['']
 
-#1140 IF o>c1 AND o<c2 THEN LET f=f+2: LET a=-1
-
 		if ((o > self.CONST_C1) & (o < self.CONST_C2)):
 			self.food = self.food + 2
 			verbs = []
-
-#1150 IF o>=c2 AND o<=c3 THEN LET g=g+2: LET a=-1
 
 		if ((o >= self.CONST_C2) & (o <= self.CONST_C3)):
 			self.drink = self.drink + 2
 			verbs = []
 
-#1160 IF o>c1 AND o<c3 THEN LET l(o)=-81
-
 		if ((o > self.CONST_C1) & (o < self.CONST_C3)):
 			self.items[o - 1][2] = -81
-
-#1170 IF a=-1 THEN LET f$="TAKEN": LET x=x+4: LET e=e+1: IF f(o)>1 THEN LET f(o)=0
 
 		if len(verbs) == 0:
 			self.status = "TAKEN."
@@ -318,32 +304,114 @@ class Game():
 			if self.items[o - 1][3] > 1:
 				self.items[o - 1][3] = 0
 
-#1180 IF b$<>"246046"OR l(11)=0 THEN RETURN 
-
 		if ((self.state != '246046') | (self.items[10][2] == 0)):
 			return
-
-#1190 LET f$=u$: LET l(o)=r: IF FN r(3)<3 THEN RETURN 
 
 		self.status = "YOU ANGER THE BIRD"
 		self.items[o - 1][2] = self.location
 		if random.randint(1, 3) < 3:
 			return
 
-#1200 LET a$="#"+u$+r$
-
 		self.__slow_print("#YOU ANGER THE BIRD, AND IT FLIES YOU TO A REMOTE PLACE")
-
-#1210 LET r=63+FN r(6): LET l(16)=1: LET f$=""
 
 		self.location = 63 + random.randint(1, 6)
 		self.items[15][2] = 1
 		self.status = ''
 
-#1220 GO SUB 2740: RETURN 
+		return
+
+	def __cmd_give(self, nouns, state):
+
+		v = 42
+		w = 51
+		item = None
+		target = None
+		for w in nouns:
+			o = self.__word_id(w[0])
+			if ((item is None) & (o <= self.CONST_C3) & (o != self.CONST_C1)):
+				w.append(o)
+				item = w
+			if ((target is None) & (o > self.CONST_C3) & (o <= self.CONST_C4)):
+				w.append(o)
+				target = w
+
+		self.status = "IT IS REFUSED."
+
+		if item is None:
+			self.status = "UNRECOGNISED ITEM."
+			return
+
+		o = item[-1]
+
+		if (((o != 24) & (self.items[o - 1][2] > 0)) | (o == 52)):
+			self.status = "YOU DON'T HAVE THAT ITEM."
+			return
+
+		if target is None:
+			self.status = "GIVE IT TO WHOM?"
+			return
+
+		n = target[-1]
+
+		if self.location != self.items[n - 1][2]:
+			self.status = target[1] + " IS NOT HERE."
+			return
+
+		if ((state == '10045') & (n == 40)):
+			self.items[o - 1][2] = 81
+			self.items[39][3] = 1
+			self.status = "THE SNAKE UNCURLS."
+
+		if ((state == '2413075') & (n == 30) & (self.drink > 1)):
+			self.items[10][3] = 0
+			self.drink = self.drink - 1
+			self.status = "HE OFFERS HIS STAFF."
+
+		if ((state[0:3] == '300') & (n == 42)):
+			self.wisdom = self.wisdom + 10
+			self.items[o - 1][2] = 81
+
+		if ((state[0:3] == '120') & (n == 42)):
+			self.wisdom = self.wisdom + 10
+			self.items[o - 1][2] = 81
+
+		if ((state[0:3] == '40-') & (n == 32)):
+			self.items[n - 1][3] = 1
+			self.items[o - 1][2] = 81
+
+		if ((state[0:2] == '80') & (n == 43)):
+			self.items[o - 1][2] = 81
+			para = "*HE TAKES IT"
+			if self.location != 8:
+				para = para + ", RUNS DOWN THE CORRIDOR,"
+			para = para + " AND CASTS IT INTO THE CHEMICAL VATS"
+			self.__slow_print(para)
+			self.__slow.print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
+			self.items[7][3] = -1
+
+		if ((self.items[o - 1][2] == 81) | ((o == 24) & (self.items[10][2] > 0) & (self.drink > 0))):
+			self.status = "IT IS ACCEPTED"
+
+		if n == 41:
+			self.items[o - 1][2] = 51
+			self.status = "IT IS ACCEPTED"
 
 		return
 
+	def __cmd_open(self, state):
+
+		if state == '2644044':
+			self.status = "CHEST OPEN."
+			self.items[5][3] = 9
+			self.items[4][3] = 9
+			self.items[14][3] = 9
+
+		if state == '2951151':
+			self.status = "THE TRAPDOOR CREAKS."
+			self.items[28][3] = 0
+			self.wisdom = self.wisdom + 3
+
+		return
 
 if __name__ == "__main__":
 
