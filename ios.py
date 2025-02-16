@@ -14,7 +14,7 @@ class Game():
 		with open(items_path, 'r') as fp:
 			self.items = json.load(fp)
 		self.prepositions = ["BY", "FACING", "AT", "IN", "OUTSIDE", "BENEATH", "ON"]
-		self.verbs = ["N", "S", "E", "W", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
+		self.verbs = ["NOR", "SOU", "EAS", "WES", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
 		self.status = "LET YOUR QUEST BEGIN."
 		self.state = ""
 		self.over = False
@@ -104,6 +104,8 @@ class Game():
 			word_id = self.__word_id(n[0][0])
 			self.state = str(word_id) + str(n[0][2]) + str(n[0][3]) + str(self.location)
 
+		print('\033[96m' + json.dumps(v) + '\033[0m')
+		print('\033[96m' + json.dumps(n) + '\033[0m')
 		print('\033[96m' + self.state + '\033[0m')
 
 		self.time_remaining = self.time_remaining - 1
@@ -117,6 +119,10 @@ class Game():
 			self.__cmd_give(n, self.state)
 		if 'OPE' in v:
 			self.__cmd_open(self.state)
+		if 'EAT' in v:
+			self.__cmd_eat(n, self.state)
+		if 'DRI' in v:
+			self.__cmd_drink(n, self.state)
 
 		if self.strength <= 0:
 			self.over = True
@@ -128,6 +134,8 @@ class Game():
 		return
 
 	def __swimming(self):
+	
+		# I've bodged this a bit because I'm not 100% on how it's supposed to work
 
 		self.wisdom = self.wisdom - 1
 		r = random.randint(1, 5)
@@ -411,6 +419,43 @@ class Game():
 			self.items[28][3] = 0
 			self.wisdom = self.wisdom + 3
 
+		return
+
+	def __cmd_eat(self, nouns, state):
+
+		v = 42
+		w = 51
+		o = self.__word_id(nouns[0][0])
+		if ((o < self.CONST_C1) | (o > self.CONST_C3)):
+			self.status = "YOU CAN'T EAT THAT."
+			self.wisdom = self.wisdom - 1
+			return
+		self.status = "YOU HAVE NO FOOD."
+		if self.food > 0:
+			self.food = self.food - 1
+			self.strength = self.strength + 10
+			self.status = "OK"
+		if o == 3:
+			self.wisdom = self.wisdom - 5
+			self.strength = self.strength - 2
+			self.status = "THEY MAKE YOU VERY ILL!"
+		return
+
+	def __cmd_drink(self, nouns, state):
+
+		v = 42
+		w = 51
+		o = self.__word_id(nouns[0][0])
+		if o == 31:
+			pass # TODO replace with 'drunk' routine
+		if ((o < self.CONST_C1) | (o > self.CONST_C3)):
+			self.status = "YOU CAN'T DRINK THAT."
+			self.wisdom = self.wisdom - 1
+			return
+		if self.drink > 0:
+			self.drink = self.drink - 1
+			self.strength = self.strength + 7
+			self.status = "OK"
 		return
 
 if __name__ == "__main__":
