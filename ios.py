@@ -14,7 +14,7 @@ class Game():
 		with open(items_path, 'r') as fp:
 			self.items = json.load(fp)
 		self.prepositions = ["BY", "FACING", "AT", "IN", "OUTSIDE", "BENEATH", "ON"]
-		self.verbs = ["NOR", "SOU", "EAS", "WES", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
+		self.verbs = ["", "", "", "", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
 		self.status = "LET YOUR QUEST BEGIN."
 		self.state = ""
 		self.over = False
@@ -63,15 +63,19 @@ class Game():
 			time.sleep(0.1)
 		print('')
 
-	def __lookup_word(self, word):
+	def __lookup_word(self, word, verb_priority=False):
+
+		if word == 'TO':
+			return []
 
 		vc = len(self.verbs)
 		nc = len(self.items)
-		for i in range(0, nc):
-			if word.startswith(self.items[i][0]):
-				return [False, i + 1]
+		if not verb_priority:
+			for i in range(0, nc):
+				if self.items[i][0].startswith(word[0:3]):
+					return [False, i + 1]
 		for i in range(0, vc):
-			if word.startswith(self.verbs[vc - (i + 1)]):
+			if self.verbs[vc - (i + 1)].startswith(word[0:3]):
 				return [True, vc - i]
 		return []
 
@@ -79,8 +83,21 @@ class Game():
 
 		nouns = []
 		verbs = []
-		for word in text.strip().split(' '):
-			item = self.__lookup_word(word.upper())
+		words = text.upper().strip().split(' ')
+		if len(words) == 1:
+			if words[0] != 'EAT':
+				direction = words[0]
+				if direction == 'N':
+					direction = 'NORTH'
+				if direction == 'S':
+					direction = 'SOUTH'
+				if direction == 'W':
+					direction = 'WEST'
+				if direction == 'E':
+					direction = 'EAST'
+				words = ['GO', direction]
+		for word in words:
+			item = self.__lookup_word(word, verb_priority=((len(verbs) == 0) & (len(word) > 1)))
 			if len(item) != 2:
 				continue
 			if item[0]:
@@ -425,8 +442,11 @@ class Game():
 
 		v = 42
 		w = 51
-		o = self.__word_id(nouns[0][0])
-		if ((o < self.CONST_C1) | (o > self.CONST_C3)):
+		if len(nouns) == 0:
+			o = 0
+		else:
+			o = self.__word_id(nouns[0][0])
+		if (((o > 0) & (o < self.CONST_C1)) | (o > self.CONST_C3)):
 			self.status = "YOU CAN'T EAT THAT."
 			self.wisdom = self.wisdom - 1
 			return
@@ -445,10 +465,13 @@ class Game():
 
 		v = 42
 		w = 51
-		o = self.__word_id(nouns[0][0])
+		if len(nouns) == 0:
+			o = 0
+		else:
+			o = self.__word_id(nouns[0][0])
 		if o == 31:
 			pass # TODO replace with 'drunk' routine
-		if ((o < self.CONST_C1) | (o > self.CONST_C3)):
+		if (((o > 0) & (o < self.CONST_C1)) | (o > self.CONST_C3)):
 			self.status = "YOU CAN'T DRINK THAT."
 			self.wisdom = self.wisdom - 1
 			return
