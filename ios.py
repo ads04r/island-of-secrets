@@ -25,11 +25,15 @@ class Game():
 		self.wisdom = 35
 		self.food = 2
 		self.drink = 2
+		self.items_held = 0
 
 		self.CONST_C1 = 16
 		self.CONST_C2 = 21
 		self.CONST_C3 = 24
 		self.CONST_C4 = 43
+
+	def __s(self):
+		return int(self.strength - (self.items_held / self.CONST_C4 + .1))
 
 	def items_seen(self):
 
@@ -126,6 +130,7 @@ class Game():
 		print('\033[96m' + self.state + '\033[0m')
 
 		self.time_remaining = self.time_remaining - 1
+		self.strength = self.__s()
 		self.status = ''
 
 		if (((len(v) == 0) | ('GO' in v)) & (len(n) > 0)):
@@ -136,10 +141,14 @@ class Game():
 			self.__cmd_give(n, self.state)
 		if 'OPE' in v:
 			self.__cmd_open(self.state)
+		if (('LEA' in v) | ('DRO' in v)):
+			self.__cmd_drop(v, n, self.state)
 		if 'EAT' in v:
 			self.__cmd_eat(n, self.state)
 		if 'DRI' in v:
 			self.__cmd_drink(n, self.state)
+		if 'SAY' in v:
+			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
 
 		if self.strength <= 0:
 			self.over = True
@@ -148,6 +157,53 @@ class Game():
 		if 'QUI' in v:
 			self.over = True
 
+		return
+
+	def __logmen(self):
+		
+		self.status = ''
+		text = '# THE LOGMEN DECIDE TO HAVE A LITTLE FUN AND '
+		self.items[40][2] = 0
+		self.strength = self.strength - 4
+		self.wisdom = self.wisdom - 4
+		if self.location < 34:
+			text = text + 'THROW YOU IN THE WATER'
+			self.location = 32
+		if self.location > 33:
+			text = text + 'TIE YOU UP IN A STOREROOM'
+			self.location = 51
+		self.__slow_print(text)
+		for i in range(2, 4):
+			if self.items[i][2] == 0:
+				self.items[i][2] = 42
+		return
+		
+	def __swampman(self):
+		
+		text = '* THE SWAMPMAN TELLS HIS TALE'
+		self.__slow_print(text)
+		self.items[31][3] = -1
+		return
+		
+	def __median(self):
+	
+		text = "MEDIAN CAN DISABLE THE EQUIPMENT"
+		if self.items[7][2] == 0:
+			text = text + " AND ASKS YOU FOR THE PEBBLE YOU CARRY"
+		return
+		
+	def __storm_begin(self):
+		
+		self.items[35][3] = 0 - randint(7, 10)
+		self.status = "A STORM BREAKS OVERHEAD!"
+		return
+		
+	def __storm_continue(self):
+		
+		self.__slow_print("//// LIGHTNING FLASHES!")
+		self.items[38][2] = self.location
+		self.strength = self.strength - 8
+		self.wisdom = self.wisdom - 2
 		return
 
 	def __swimming(self):
@@ -267,7 +323,7 @@ class Game():
 		text = text + "AND ARE TAKEN TO THE ISLAND OF SECRETS"
 		self.__slow_print(text)
 
-		if x < 60:
+		if self.wisdom < 60:
 			text = "#TO SERVE OMEGAN FOREVER!"
 			self.over = True
 		else:
@@ -326,6 +382,7 @@ class Game():
 		if len(verbs) == 0:
 			self.status = "TAKEN."
 			self.wisdom = self.wisdom + 4
+			self.items_held = self.items_held + 1
 			if self.items[o - 1][3] > 1:
 				self.items[o - 1][3] = 0
 
@@ -351,14 +408,14 @@ class Game():
 		w = 51
 		item = None
 		target = None
-		for w in nouns:
-			o = self.__word_id(w[0])
+		for word in nouns:
+			o = self.__word_id(word[0])
 			if ((item is None) & (o <= self.CONST_C3) & (o != self.CONST_C1)):
-				w.append(o)
-				item = w
+				word.append(o)
+				item = word
 			if ((target is None) & (o > self.CONST_C3) & (o <= self.CONST_C4)):
-				w.append(o)
-				target = w
+				word.append(o)
+				target = word
 
 		self.status = "IT IS REFUSED."
 
@@ -386,11 +443,13 @@ class Game():
 			self.items[o - 1][2] = 81
 			self.items[39][3] = 1
 			self.status = "THE SNAKE UNCURLS."
+			return
 
 		if ((state == '2413075') & (n == 30) & (self.drink > 1)):
 			self.items[10][3] = 0
 			self.drink = self.drink - 1
 			self.status = "HE OFFERS HIS STAFF."
+			return
 
 		if ((state[0:3] == '300') & (n == 42)):
 			self.wisdom = self.wisdom + 10
@@ -413,14 +472,88 @@ class Game():
 			self.__slow_print(para)
 			self.__slow.print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
 			self.items[7][3] = -1
+			return
 
 		if ((self.items[o - 1][2] == 81) | ((o == 24) & (self.items[10][2] > 0) & (self.drink > 0))):
 			self.status = "IT IS ACCEPTED"
 
-		if n == 41:
+		if n == 41: # LOGMEN
 			self.items[o - 1][2] = 51
-			self.status = "IT IS ACCEPTED"
+			self.status = "IT IS TAKEN"
 
+		return
+		
+	def __cmd_drop(self, verbs, nouns, state):
+
+		v = 42
+		w = 51
+		o = self.__word_id(nouns[0][0])
+		if 'DRO' in verbs:
+			if ((o == 4) & (self.items[o - 1][2] == 0)):
+				self.wisdom = self.wisdom - 1
+				self.status = "IT BREAKS!"
+				return
+		if ((self.items[o - 1][2] < self.CONST_C1) & (self.items[o - 1][2] == 0)):
+				self.items[o - 1][2] = self.location
+				self.status = "NO LONGER CARRYING " + self.items[o - 1][1]
+				self.items_held = self.items_held - 1
+		return
+
+	def __cmd_break(self, verbs, nouns, state):
+		v = 42
+		o = self.__word_id(nouns[0][0])
+		self.strength = self.strength - 2
+		if state == '3577077':
+			if self.items[8][2] == 0:
+				self.items[22][3] = 0
+				self.items[22][2] = self.location
+		if ((v > 15) & (v < 19) & ((self.items[8][2] == 0) | (self.items[14][2] == 0))):
+			self.status = 'OK'
+		if (((state == '1258158') | (state == '2758158')) & (self.items[14][2] == 0)):
+			self.items[11][3] = 0
+			self.items[26][3] = 0
+			self.status = 'CRACK!'
+		if ((state[0:4] == '1100') & (self.location == 10)):
+			self.__endgame(o)
+		if 'TAP' in verbs:
+			if ((o == 16) | ((o > 29) & (o < 34)) | ((o > 38) & (o < 44))):
+				self.__cmd_kill(o)
+		return
+
+	def __cmd_fight(self, state):
+		return
+
+	def __cmd_kill(self, o):
+		w = 51
+		if self.items[8][2] > 0:
+			return
+		self.strength = self.strength - 12
+		self.wisdom = self.wisdom - 10
+		self.status = "THAT WOULD BE UNWISE!"
+		if self.location != self.items[o - 1][2]:
+			return
+		self.items[w - 1][3] = 1
+		self.status == ''
+		self.__slow_print("# A THUNDER SPLITS THE SKY! IT IS THE TRIUMPHANT VOICE OF OMEGAN.")
+		self.__slow_print("# WELL DONE ALPHAN! THE MEANS BECOME THE END.. I CLAIM YOU AS MY OWN! HA HA HAH!")
+		self.time_remaining = 0
+		self.strength = 0
+		self.wisdom = 0
+		return
+		
+	def __cmd_say(self, state, text):
+		self.status = text
+		if ((text == 'STONY WORDS') & (self.location == 47) & (self.items[7][3] == 0)):
+			self.items[43][3] = 1
+			self.status = "THE STONES ARE FIXED"
+		if ((text != "REMEMBER OLD TIMES") | (self.location != self.items[41][2]) | (self.items[2][2] < 81) | (self.items[11][2] < 81)):
+			return
+		self.status = "HE EATS THE FLOWERS - AND CHANGES"
+		self.items[41][3] = 1
+		self.items[42][3] = 0
+		return
+
+	def __endgame(self, o):
 		return
 
 	def __cmd_open(self, state):
@@ -487,3 +620,4 @@ if __name__ == "__main__":
 	while not game.over:
 		print('\n'.join(game.prose()))
 		game.input(input().upper())
+	print(game.status)
