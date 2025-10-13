@@ -471,9 +471,10 @@ class Game():
 			self.wisdom = self.wisdom + 10
 			self.items[o - 1][2] = 81
 
-		if ((state[0:3] == '40-') & (n == 32)):
+		if ((state[0:3] == '400') & (n == 32)):
 			self.items[n - 1][3] = 1
 			self.items[o - 1][2] = 81
+			self.status = "IT IS ACCEPTED"
 
 		if ((state[0:2] == '80') & (n == 43)):
 			self.items[o - 1][2] = 81
