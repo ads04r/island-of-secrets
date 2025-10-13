@@ -151,6 +151,8 @@ class Game():
 			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
 		if 'RUB' in v:
 			self.__cmd_rub(self.state)
+		if (('HEL' in v) | ('SCR' in v)):
+			self.__cmd_help_scratch(v, self.state)
 		if 'XSA' in v:
 			self.__cmd_save()
 		if 'XLO' in v:
@@ -639,6 +641,19 @@ class Game():
 		if self.items[4][2] == 0:  # RAG is being carried (item 5, index 4)
 			self.items[7][3] = 0  # Make pebble takeable (item 8, index 7)
 			self.status = "THE STONE UTTERS STONY WORDS"
+		
+		return
+
+	def __cmd_help_scratch(self, verbs, state):
+		# Both HELP and SCRATCH respond to villager or sage
+		if ((state == '3075075') | (state == '3371071')):
+			self.status = "HOW WILL YOU DO THAT"
+		
+		# Special case: SCRATCH for the sage reveals the flower
+		if ((state == '3371071') & ('SCR' in verbs)):
+			self.items[2][3] = 0  # Flower (item 3, index 2) becomes takeable
+			self.status = "SHE NODS SLOWLY"
+			self.wisdom = self.wisdom + 5
 		
 		return
 
