@@ -14,7 +14,7 @@ class Game():
 		with open(items_path, 'r') as fp:
 			self.items = json.load(fp)
 		self.prepositions = ["BY", "FACING", "AT", "IN", "OUTSIDE", "BENEATH", "ON"]
-		self.verbs = ["", "", "", "", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
+		self.verbs = ["", "", "", "", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI", "DEB"]
 		self.status = "LET YOUR QUEST BEGIN."
 		self.state = ""
 		self.over = False
@@ -149,6 +149,10 @@ class Game():
 			self.__cmd_drink(n, self.state)
 		if 'SAY' in v:
 			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
+		if 'RUB' in v:
+			self.__cmd_rub(self.state)
+		if 'DEB' in v:
+			self.__cmd_debug()
 
 		if self.strength <= 0:
 			self.over = True
@@ -612,6 +616,58 @@ class Game():
 			self.drink = self.drink - 1
 			self.strength = self.strength + 7
 			self.status = "OK"
+		return
+
+	def __cmd_rub(self, state):
+		self.status = "A-DUB-DUB"
+		if state[0:4] != '2815':
+			return
+		
+		o = int(state[0:2])  # Item 28 (stone)
+		
+		# First rub: stone status changes from 1 to 0
+		if self.items[o - 1][3] == 1:
+			self.items[o - 1][3] = 0
+			self.status = "REFLECTIONS STIR WITHIN"
+			return
+		
+		# Second rub: if carrying the rag (item 5), reveal the pebble
+		if self.items[4][2] == 0:  # RAG is being carried (item 5, index 4)
+			self.items[7][3] = 0  # Make pebble takeable (item 8, index 7)
+			self.status = "THE STONE UTTERS STONY WORDS"
+		
+		return
+
+	def __cmd_debug(self):
+		print('\n' + '='*60)
+		print('DEBUG MODE - INTERNAL STATE')
+		print('='*60)
+		print(f'Location: {self.location}')
+		print(f'Time Remaining: {self.time_remaining}')
+		print(f'Strength: {self.strength}')
+		print(f'Wisdom: {self.wisdom}')
+		print(f'Food: {self.food}')
+		print(f'Drink: {self.drink}')
+		print(f'Items Held: {self.items_held}')
+		print(f'State String: "{self.state}"')
+		print(f'Game Over: {self.over}')
+		print('-'*60)
+		print('ITEMS CARRIED (location == 0):')
+		for i, item in enumerate(self.items):
+			if item[2] == 0:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('-'*60)
+		print('ITEMS AT CURRENT LOCATION:')
+		for i, item in enumerate(self.items):
+			if item[2] == self.location:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('-'*60)
+		print('ALL ITEMS WITH NON-ZERO STATUS:')
+		for i, item in enumerate(self.items):
+			if item[3] != 0:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('='*60 + '\n')
+		self.status = 'DEBUG INFO DISPLAYED'
 		return
 
 if __name__ == "__main__":
