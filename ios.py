@@ -153,6 +153,8 @@ class Game():
 			self.__cmd_rub(self.state)
 		if (('HEL' in v) | ('SCR' in v)):
 			self.__cmd_help_scratch(v, self.state)
+		if (('BRE' in v) | ('CHO' in v) | ('TAP' in v)) & (len(n) > 0):
+			self.__cmd_break(v, n, self.state)
 		if 'XSA' in v:
 			self.__cmd_save()
 		if 'XLO' in v:
