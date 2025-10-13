@@ -151,6 +151,10 @@ class Game():
 			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
 		if 'RUB' in v:
 			self.__cmd_rub(self.state)
+		if 'XSA' in v:
+			self.__cmd_save()
+		if 'XLO' in v:
+			self.__cmd_load()
 		if 'DEB' in v:
 			self.__cmd_debug()
 
@@ -635,6 +639,59 @@ class Game():
 		if self.items[4][2] == 0:  # RAG is being carried (item 5, index 4)
 			self.items[7][3] = 0  # Make pebble takeable (item 8, index 7)
 			self.status = "THE STONE UTTERS STONY WORDS"
+		
+		return
+
+	def __cmd_save(self):
+		base_path = os.path.abspath(os.path.dirname(__file__))
+		save_path = os.path.join(base_path, "savegame.json")
+		
+		save_data = {
+			"location": self.location,
+			"time_remaining": self.time_remaining,
+			"strength": self.strength,
+			"wisdom": self.wisdom,
+			"food": self.food,
+			"drink": self.drink,
+			"items_held": self.items_held,
+			"items": self.items,
+			"status": self.status,
+			"state": self.state,
+			"over": self.over
+		}
+		
+		try:
+			with open(save_path, 'w') as fp:
+				json.dump(save_data, fp, indent=2)
+			self.status = "GAME SAVED."
+		except Exception as e:
+			self.status = f"SAVE FAILED: {str(e)}"
+		
+		return
+
+	def __cmd_load(self):
+		base_path = os.path.abspath(os.path.dirname(__file__))
+		save_path = os.path.join(base_path, "savegame.json")
+		
+		try:
+			with open(save_path, 'r') as fp:
+				save_data = json.load(fp)
+			
+			self.location = save_data["location"]
+			self.time_remaining = save_data["time_remaining"]
+			self.strength = save_data["strength"]
+			self.wisdom = save_data["wisdom"]
+			self.food = save_data["food"]
+			self.drink = save_data["drink"]
+			self.items_held = save_data["items_held"]
+			self.items = save_data["items"]
+			self.status = "GAME LOADED."
+			self.state = save_data["state"]
+			self.over = save_data["over"]
+		except FileNotFoundError:
+			self.status = "NO SAVE GAME FOUND."
+		except Exception as e:
+			self.status = f"LOAD FAILED: {str(e)}"
 		
 		return
 
