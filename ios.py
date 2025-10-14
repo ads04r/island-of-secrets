@@ -504,7 +504,7 @@ class Game():
 				para = para + ", RUNS DOWN THE CORRIDOR,"
 			para = para + " AND CASTS IT INTO THE CHEMICAL VATS"
 			self.__slow_print(para)
-			self.__slow.print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
+			self.__slow_print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
 			self.items[7][3] = -1
 			return
 
