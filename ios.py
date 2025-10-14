@@ -153,6 +153,8 @@ class Game():
 			self.__cmd_rub(self.state)
 		if 'RID' in v:
 			self.__cmd_ride(self.state)
+		if 'WAV' in v:
+			self.__cmd_wave(self.state)
 		if (('HEL' in v) | ('SCR' in v)):
 			self.__cmd_help_scratch(v, self.state)
 		if (('BRE' in v) | ('CHO' in v) | ('TAP' in v)) & (len(n) > 0):
@@ -208,7 +210,7 @@ class Game():
 		
 	def __storm_begin(self):
 		
-		self.items[35][3] = 0 - randint(7, 10)
+		self.items[35][3] = 0 - random.randint(7, 10)
 		self.status = "A STORM BREAKS OVERHEAD!"
 		return
 		
@@ -655,6 +657,19 @@ class Game():
 			o = int(state[0:2])  # Item 16 (canyon beast)
 			self.items[o - 1][3] = -1  # Set beast status to -1
 			self.status = "IT ALLOWS YOU TO RIDE"
+		return
+
+	def __cmd_wave(self, state):
+		# If at boatman's location, he waves back
+		if self.location == self.items[24][2]:  # Item 25 (boatman)
+			self.status = "THE BOATMAN WAVES BACK"
+		
+		# If waving the torch (carried), it lights the way through the arms
+		if state[0:3] == '700':
+			self.items[6][3] = 1  # Torch (item 7, index 6) status becomes 1
+			self.status = "TAKEN."
+			self.wisdom = self.wisdom + 8
+		
 		return
 
 	def __cmd_help_scratch(self, verbs, state):
