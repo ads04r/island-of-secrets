@@ -170,6 +170,12 @@ class Game():
 		if self.items[42][3] == 0:  # Item 43 (Median), index 42
 			self.items[42][2] = self.location
 
+		# Check winning condition: pebble + staff + coal statuses = -3
+		if (self.items[7][3] + self.items[10][3] + self.items[12][3]) == -3:
+			self.__slow_print("*THE WORLD LIVES WITH NEW HOPE!")
+			self.status = "YOUR QUEST IS OVER"
+			self.over = True
+
 		if self.strength <= 0:
 			self.over = True
 		if self.time_remaining <= 0:
@@ -589,6 +595,28 @@ class Game():
 		return
 
 	def __endgame(self, o):
+		# Wisdom +10, item given away and status set to -1
+		self.wisdom = self.wisdom + 10
+		self.items[o - 1][2] = 81
+		self.items[o - 1][3] = -1
+		
+		if o == 11:  # Staff
+			self.__slow_print("#IT SHATTERS RELEASING A DAZZLING RAINBOW OF COLOURS!")
+			if self.items[1][2] == self.location:  # If egg is at location
+				self.__slow_print("THE EGG HATCHES INTO A BABY DAKTYL WHICH TAKES OMEGAN IN ITS CLAWS AND FLIES AWAY")
+				self.items[38][2] = 81  # Omegan gone
+				self.items[1][2] = 81   # Egg gone
+				self.items[1][3] = -1   # Egg status
+				self.strength = self.strength + 40
+		
+		if o == 13:  # Coal
+			if self.items[12][2] == self.location:  # If coal is at location
+				self.__slow_print("*THE COAL BURNS WITH A WARM RED FLAME")
+				if (self.location == 10) & (self.items[38][2] == self.location):  # If Omegan is here
+					self.__slow_print("WHICH DISSOLVES OMEGAN'S CLOAK")
+					self.strength = self.strength + 20
+		
+		self.status = ""
 		return
 
 	def __cmd_open(self, state):
