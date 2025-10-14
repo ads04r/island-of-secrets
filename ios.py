@@ -554,7 +554,10 @@ class Game():
 			self.items[11][3] = 0
 			self.items[26][3] = 0
 			self.status = 'CRACK!'
+		# Call endgame for staff (carried) or coal/flint (at location)
 		if ((state[0:4] == '1100') & (self.location == 10)):
+			self.__endgame(o)
+		if ((o >= 11) & (o <= 14) & (self.location == 10) & (self.items[o-1][2] == self.location)):
 			self.__endgame(o)
 		if 'TAP' in verbs:
 			if ((o == 16) | ((o > 29) & (o < 34)) | ((o > 38) & (o < 44))):
@@ -610,11 +613,10 @@ class Game():
 				self.strength = self.strength + 40
 		
 		if o == 13:  # Coal
-			if self.items[12][2] == self.location:  # If coal is at location
-				self.__slow_print("*THE COAL BURNS WITH A WARM RED FLAME")
-				if (self.location == 10) & (self.items[38][2] == self.location):  # If Omegan is here
-					self.__slow_print("WHICH DISSOLVES OMEGAN'S CLOAK")
-					self.strength = self.strength + 20
+			self.__slow_print("*THE COAL BURNS WITH A WARM RED FLAME")
+			if (self.location == 10) & (self.items[38][2] == self.location):  # If Omegan is here
+				self.__slow_print("WHICH DISSOLVES OMEGAN'S CLOAK")
+				self.strength = self.strength + 20
 		
 		self.status = ""
 		return
