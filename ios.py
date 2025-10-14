@@ -506,6 +506,7 @@ class Game():
 			self.__slow_print(para)
 			self.__slow_print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
 			self.items[7][3] = -1
+			self.status = ""
 			return
 
 		if ((self.items[o - 1][2] == 81) | ((o == 24) & (self.items[10][2] > 0) & (self.drink > 0))):
