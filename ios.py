@@ -301,6 +301,19 @@ class Game():
 
 		if ((d > 0) & (d != 5)):
 			loc = self.locations[self.location - 1]
+			
+			# Special case: location 39 "HERE" has random exits
+			if self.location == 39:
+				maze_pattern = "101110100"
+				rd = random.randint(0, 4)  # 0-4 in Python (1-5 in BASIC)
+				exits = maze_pattern[rd:rd+4]
+				# Override location exits: N, S, E, W
+				loc = list(loc)  # Make a copy
+				loc[2] = int(exits[0])  # North
+				loc[3] = int(exits[1])  # South
+				loc[4] = int(exits[2])  # East
+				loc[5] = int(exits[3])  # West
+			
 			if d == 1:
 				if loc[2] == 0:
 					self.location = self.location - 10
