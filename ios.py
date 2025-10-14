@@ -166,6 +166,10 @@ class Game():
 		if 'DEB' in v:
 			self.__cmd_debug()
 
+		# Median follows the player if status is 0
+		if self.items[42][3] == 0:  # Item 43 (Median), index 42
+			self.items[42][2] = self.location
+
 		if self.strength <= 0:
 			self.over = True
 		if self.time_remaining <= 0:
