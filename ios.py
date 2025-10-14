@@ -151,6 +151,8 @@ class Game():
 			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
 		if 'RUB' in v:
 			self.__cmd_rub(self.state)
+		if 'RID' in v:
+			self.__cmd_ride(self.state)
 		if (('HEL' in v) | ('SCR' in v)):
 			self.__cmd_help_scratch(v, self.state)
 		if (('BRE' in v) | ('CHO' in v) | ('TAP' in v)) & (len(n) > 0):
@@ -645,6 +647,14 @@ class Game():
 			self.items[7][3] = 0  # Make pebble takeable (item 8, index 7)
 			self.status = "THE STONE UTTERS STONY WORDS"
 		
+		return
+
+	def __cmd_ride(self, state):
+		# Check if riding the canyon beast (item 16, carried, at any location)
+		if state[0:4] == '1600':
+			o = int(state[0:2])  # Item 16 (canyon beast)
+			self.items[o - 1][3] = -1  # Set beast status to -1
+			self.status = "IT ALLOWS YOU TO RIDE"
 		return
 
 	def __cmd_help_scratch(self, verbs, state):
