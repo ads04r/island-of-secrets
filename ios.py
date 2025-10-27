@@ -14,7 +14,7 @@ class Game():
 		with open(items_path, 'r') as fp:
 			self.items = json.load(fp)
 		self.prepositions = ["BY", "FACING", "AT", "IN", "OUTSIDE", "BENEATH", "ON"]
-		self.verbs = ["", "", "", "", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI"]
+		self.verbs = ["", "", "", "", "GO", "GET", "TAK", "GIV", "DRO", "LEA", "EAT", "DRI", "RID", "OPE", "PIC", "CHO", "CHI", "TAP", "BRE", "FIG", "STR", "ATT", "HIT", "KIL", "SWI", "SHE", "HEL", "SCR", "CAT", "RUB", "POL", "REA", "EXA", "FIL", "SAY", "WAI", "RES", "WAV", "INF", "XLO", "XSA", "QUI", "DEB"]
 		self.status = "LET YOUR QUEST BEGIN."
 		self.state = ""
 		self.over = False
@@ -149,6 +149,32 @@ class Game():
 			self.__cmd_drink(n, self.state)
 		if 'SAY' in v:
 			self.__cmd_say(self.state, text.strip().split(' ', maxsplit=1)[-1])
+		if 'RUB' in v:
+			self.__cmd_rub(self.state)
+		if 'RID' in v:
+			self.__cmd_ride(self.state)
+		if 'WAV' in v:
+			self.__cmd_wave(self.state)
+		if (('HEL' in v) | ('SCR' in v)):
+			self.__cmd_help_scratch(v, self.state)
+		if (('BRE' in v) | ('CHO' in v) | ('TAP' in v) | ('STR' in v) | ('ATT' in v) | ('HIT' in v)) & (len(n) > 0):
+			self.__cmd_break(v, n, self.state)
+		if 'XSA' in v:
+			self.__cmd_save()
+		if 'XLO' in v:
+			self.__cmd_load()
+		if 'DEB' in v:
+			self.__cmd_debug()
+
+		# Median follows the player if status is 0
+		if self.items[42][3] == 0:  # Item 43 (Median), index 42
+			self.items[42][2] = self.location
+
+		# Check winning condition: pebble + staff + coal statuses = -3
+		if (self.items[7][3] + self.items[10][3] + self.items[12][3]) == -3:
+			self.__slow_print("*THE WORLD LIVES WITH NEW HOPE!")
+			self.status = "YOUR QUEST IS OVER"
+			self.over = True
 
 		if self.strength <= 0:
 			self.over = True
@@ -194,7 +220,7 @@ class Game():
 		
 	def __storm_begin(self):
 		
-		self.items[35][3] = 0 - randint(7, 10)
+		self.items[35][3] = 0 - random.randint(7, 10)
 		self.status = "A STORM BREAKS OVERHEAD!"
 		return
 		
@@ -285,6 +311,19 @@ class Game():
 
 		if ((d > 0) & (d != 5)):
 			loc = self.locations[self.location - 1]
+			
+			# Special case: location 39 "HERE" has random exits
+			if self.location == 39:
+				maze_pattern = "101110100"
+				rd = random.randint(0, 4)  # 0-4 in Python (1-5 in BASIC)
+				exits = maze_pattern[rd:rd+4]
+				# Override location exits: N, S, E, W
+				loc = list(loc)  # Make a copy
+				loc[2] = int(exits[0])  # North
+				loc[3] = int(exits[1])  # South
+				loc[4] = int(exits[2])  # East
+				loc[5] = int(exits[3])  # West
+			
 			if d == 1:
 				if loc[2] == 0:
 					self.location = self.location - 10
@@ -459,9 +498,10 @@ class Game():
 			self.wisdom = self.wisdom + 10
 			self.items[o - 1][2] = 81
 
-		if ((state[0:3] == '40-') & (n == 32)):
+		if ((state[0:3] == '400') & (n == 32)):
 			self.items[n - 1][3] = 1
 			self.items[o - 1][2] = 81
+			self.status = "IT IS ACCEPTED"
 
 		if ((state[0:2] == '80') & (n == 43)):
 			self.items[o - 1][2] = 81
@@ -470,8 +510,9 @@ class Game():
 				para = para + ", RUNS DOWN THE CORRIDOR,"
 			para = para + " AND CASTS IT INTO THE CHEMICAL VATS"
 			self.__slow_print(para)
-			self.__slow.print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
+			self.__slow_print("PURIFYING THEM WITH A CLEAR BLUE LIGHT REACHING FAR INTO THE LAKES AND RIVERS BEYOND.")
 			self.items[7][3] = -1
+			self.status = ""
 			return
 
 		if ((self.items[o - 1][2] == 81) | ((o == 24) & (self.items[10][2] > 0) & (self.drink > 0))):
@@ -513,7 +554,10 @@ class Game():
 			self.items[11][3] = 0
 			self.items[26][3] = 0
 			self.status = 'CRACK!'
+		# Call endgame for staff (carried) or coal/flint (at location)
 		if ((state[0:4] == '1100') & (self.location == 10)):
+			self.__endgame(o)
+		if ((o >= 11) & (o <= 14) & (self.location == 10) & (self.items[o-1][2] == self.location)):
 			self.__endgame(o)
 		if 'TAP' in verbs:
 			if ((o == 16) | ((o > 29) & (o < 34)) | ((o > 38) & (o < 44))):
@@ -554,6 +598,27 @@ class Game():
 		return
 
 	def __endgame(self, o):
+		# Wisdom +10, item given away and status set to -1
+		self.wisdom = self.wisdom + 10
+		self.items[o - 1][2] = 81
+		self.items[o - 1][3] = -1
+		
+		if o == 11:  # Staff
+			self.__slow_print("#IT SHATTERS RELEASING A DAZZLING RAINBOW OF COLOURS!")
+			if self.items[1][2] == self.location:  # If egg is at location
+				self.__slow_print("THE EGG HATCHES INTO A BABY DAKTYL WHICH TAKES OMEGAN IN ITS CLAWS AND FLIES AWAY")
+				self.items[38][2] = 81  # Omegan gone
+				self.items[1][2] = 81   # Egg gone
+				self.items[1][3] = -1   # Egg status
+				self.strength = self.strength + 40
+		
+		if o == 13:  # Coal
+			self.__slow_print("*THE COAL BURNS WITH A WARM RED FLAME")
+			if (self.location == 10) & (self.items[38][2] == self.location):  # If Omegan is here
+				self.__slow_print("WHICH DISSOLVES OMEGAN'S CLOAK")
+				self.strength = self.strength + 20
+		
+		self.status = ""
 		return
 
 	def __cmd_open(self, state):
@@ -612,6 +677,145 @@ class Game():
 			self.drink = self.drink - 1
 			self.strength = self.strength + 7
 			self.status = "OK"
+		return
+
+	def __cmd_rub(self, state):
+		self.status = "A-DUB-DUB"
+		if state[0:4] != '2815':
+			return
+		
+		o = int(state[0:2])  # Item 28 (stone)
+		
+		# First rub: stone status changes from 1 to 0
+		if self.items[o - 1][3] == 1:
+			self.items[o - 1][3] = 0
+			self.status = "REFLECTIONS STIR WITHIN"
+			return
+		
+		# Second rub: if carrying the rag (item 5), reveal the pebble
+		if self.items[4][2] == 0:  # RAG is being carried (item 5, index 4)
+			self.items[7][3] = 0  # Make pebble takeable (item 8, index 7)
+			self.status = "THE STONE UTTERS STONY WORDS"
+		
+		return
+
+	def __cmd_ride(self, state):
+		# Check if riding the canyon beast (item 16, carried, at any location)
+		if state[0:4] == '1600':
+			o = int(state[0:2])  # Item 16 (canyon beast)
+			self.items[o - 1][3] = -1  # Set beast status to -1
+			self.status = "IT ALLOWS YOU TO RIDE"
+		return
+
+	def __cmd_wave(self, state):
+		# If at boatman's location, he waves back
+		if self.location == self.items[24][2]:  # Item 25 (boatman)
+			self.status = "THE BOATMAN WAVES BACK"
+		
+		# If waving the torch (carried), it lights the way through the arms
+		if state[0:3] == '700':
+			self.items[6][3] = 1  # Torch (item 7, index 6) status becomes 1
+			self.status = "TAKEN."
+			self.wisdom = self.wisdom + 8
+		
+		return
+
+	def __cmd_help_scratch(self, verbs, state):
+		# Both HELP and SCRATCH respond to villager or sage
+		if ((state == '3075075') | (state == '3371071')):
+			self.status = "HOW WILL YOU DO THAT"
+		
+		# Special case: SCRATCH for the sage reveals the flower
+		if ((state == '3371071') & ('SCR' in verbs)):
+			self.items[2][3] = 0  # Flower (item 3, index 2) becomes takeable
+			self.status = "SHE NODS SLOWLY"
+			self.wisdom = self.wisdom + 5
+		
+		return
+
+	def __cmd_save(self):
+		base_path = os.path.abspath(os.path.dirname(__file__))
+		save_path = os.path.join(base_path, "savegame.json")
+		
+		save_data = {
+			"location": self.location,
+			"time_remaining": self.time_remaining,
+			"strength": self.strength,
+			"wisdom": self.wisdom,
+			"food": self.food,
+			"drink": self.drink,
+			"items_held": self.items_held,
+			"items": self.items,
+			"status": self.status,
+			"state": self.state,
+			"over": self.over
+		}
+		
+		try:
+			with open(save_path, 'w') as fp:
+				json.dump(save_data, fp, indent=2)
+			self.status = "GAME SAVED."
+		except Exception as e:
+			self.status = f"SAVE FAILED: {str(e)}"
+		
+		return
+
+	def __cmd_load(self):
+		base_path = os.path.abspath(os.path.dirname(__file__))
+		save_path = os.path.join(base_path, "savegame.json")
+		
+		try:
+			with open(save_path, 'r') as fp:
+				save_data = json.load(fp)
+			
+			self.location = save_data["location"]
+			self.time_remaining = save_data["time_remaining"]
+			self.strength = save_data["strength"]
+			self.wisdom = save_data["wisdom"]
+			self.food = save_data["food"]
+			self.drink = save_data["drink"]
+			self.items_held = save_data["items_held"]
+			self.items = save_data["items"]
+			self.status = "GAME LOADED."
+			self.state = save_data["state"]
+			self.over = save_data["over"]
+		except FileNotFoundError:
+			self.status = "NO SAVE GAME FOUND."
+		except Exception as e:
+			self.status = f"LOAD FAILED: {str(e)}"
+		
+		return
+
+	def __cmd_debug(self):
+		print('\n' + '='*60)
+		print('DEBUG MODE - INTERNAL STATE')
+		print('='*60)
+		print(f'Location: {self.location}')
+		print(f'Time Remaining: {self.time_remaining}')
+		print(f'Strength: {self.strength}')
+		print(f'Wisdom: {self.wisdom}')
+		print(f'Food: {self.food}')
+		print(f'Drink: {self.drink}')
+		print(f'Items Held: {self.items_held}')
+		print(f'State String: "{self.state}"')
+		print(f'Game Over: {self.over}')
+		print('-'*60)
+		print('ITEMS CARRIED (location == 0):')
+		for i, item in enumerate(self.items):
+			if item[2] == 0:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('-'*60)
+		print('ITEMS AT CURRENT LOCATION:')
+		for i, item in enumerate(self.items):
+			if item[2] == self.location:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('-'*60)
+		print('ALL ITEMS WITH NON-ZERO STATUS:')
+		for i, item in enumerate(self.items):
+			if item[3] != 0:
+				print(f'  [{i+1:2d}] {item[0]:10s} | Loc:{item[2]:3d} | Status:{item[3]:2d} | "{item[1]}"')
+		print('='*60 + '\n')
+		self.status = 'DEBUG INFO DISPLAYED'
 		return
 
 if __name__ == "__main__":
